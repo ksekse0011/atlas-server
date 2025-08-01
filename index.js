@@ -63,13 +63,20 @@ async function createTables() {
 
 // 7. Stripe 웹훅 처리
 app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req, res) => {
+    console.log('🔔 웹훅 요청 수신됨');
+    console.log('📋 Headers:', req.headers);
+    
     const sig = req.headers['stripe-signature'];
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    
+    console.log(`🔑 웹훅 시크릿 설정됨: ${webhookSecret ? 'YES' : 'NO'}`);
     
     let event;
     
     try {
         event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+        console.log('✅ 웹훅 서명 검증 성공');
+        console.log('📋 이벤트 타입:', event.type);
     } catch (err) {
         console.log(`❌ Webhook signature verification failed.`, err.message);
         return res.sendStatus(400);
@@ -341,4 +348,5 @@ app.listen(port, async () => {
     }
     console.log(`🚀 서버가 http://0.0.0.0:${port} 에서 실행 중입니다.`);
     console.log(`🔗 Stripe 웹훅 엔드포인트: https://atlas-server-api.onrender.com/stripe-webhook`);
+    console.log(`🔑 웹훅 시크릿 설정됨: ${process.env.STRIPE_WEBHOOK_SECRET ? 'YES' : 'NO'}`);
 });
