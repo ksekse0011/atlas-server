@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas Server - 구독 테스트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .success {
+            border-left-color: #28a745;
+            background-color: #d4edda;
+        }
+        .status {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Atlas Server - 구독 테스트</h1>
+        
+        <div class="form-group">
+            <label for="walletAddress">지갑 주소:</label>
+            <input type="text" id="walletAddress" placeholder="0x..." value="0x1234567890abcdef">
+        </div>
+        
+        <div class="form-group">
+            <button onclick="checkSubscription()">구독 상태 확인</button>
+            <button onclick="createCheckoutSession()">구독 생성</button>
+        </div>
+        
+        <div id="result" class="result" style="display: none;">
+            <div class="status" id="status"></div>
+            <div id="message"></div>
+        </div>
+    </div>
+
+    <script>
+        async function checkSubscription() {
+            const walletAddress = document.getElementById('walletAddress').value;
+            const resultDiv = document.getElementById('result');
+            const statusDiv = document.getElementById('status');
+            const messageDiv = document.getElementById('message');
+            
+            if (!walletAddress) {
+                showResult('error', '지갑 주소를 입력해주세요.');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/subscription-status/${walletAddress}`);
+                const data = await response.json();
+                
+                if (data.hasSubscription) {
+                    showResult('success', `구독 상태: ${data.status}<br>만료일: ${new Date(data.expiresAt).toLocaleString()}<br>이메일: ${data.customerEmail}`);
+                } else {
+                    showResult('error', `구독 없음: ${data.message}`);
+                }
+            } catch (error) {
+                showResult('error', `오류 발생: ${error.message}`);
+            }
+        }
+        
+        async function createCheckoutSession() {
+            const walletAddress = document.getElementById('walletAddress').value;
+            
+            if (!walletAddress) {
+                showResult('error', '지갑 주소를 입력해주세요.');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ walletAddress })
+                });
+                
+                const data = await response.json();
+                
+                if (data.sessionId) {
+                    // Stripe Checkout으로 리다이렉트
+                    window.location.href = `https://checkout.stripe.com/pay/${data.sessionId}`;
+                } else {
+                    showResult('error', 'Checkout Session 생성 실패');
+                }
+            } catch (error) {
+                showResult('error', `오류 발생: ${error.message}`);
+            }
+        }
+        
+        function showResult(type, message) {
+            const resultDiv = document.getElementById('result');
+            const statusDiv = document.getElementById('status');
+            const messageDiv = document.getElementById('message');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = `result ${type}`;
+            
+            if (type === 'success') {
+                statusDiv.textContent = '✅ 성공';
+            } else {
+                statusDiv.textContent = '❌ 오류';
+            }
+            
+            messageDiv.innerHTML = message;
+        }
+    </script>
+</body>
+</html> 
