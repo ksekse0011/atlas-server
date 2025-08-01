@@ -16,7 +16,7 @@ const app = express();
 
 // 4. 미들웨어 설정
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(__dirname)); // 현재 디렉토리의 모든 파일을 정적 파일로 서빙
 
 // 5. PostgreSQL 연결 설정
 const pool = new Pool({
@@ -296,6 +296,16 @@ app.post('/create-checkout-session', async (req, res) => {
 // 12. 정적 파일 제공
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'test.html'));
+});
+
+// success.html 라우트
+app.get('/success.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'success.html'));
+});
+
+// cancel.html 라우트
+app.get('/cancel.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'cancel.html'));
 });
 
 // 13. 서버 실행
