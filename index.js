@@ -338,6 +338,12 @@ app.get('/cancel.html', (req, res) => {
 // 13. 서버 실행
 const port = process.env.PORT || 3000;
 app.listen(port, async () => {
+    console.log(`🚀 서버가 http://0.0.0.0:${port} 에서 실행 중입니다.`);
+    console.log(`🔗 Stripe 웹훅 엔드포인트: https://atlas-server-api.onrender.com/stripe-webhook`);
+    console.log(`🔑 웹훅 시크릿 설정됨: ${process.env.STRIPE_WEBHOOK_SECRET ? 'YES' : 'NO'}`);
+    console.log(`🔑 Stripe API 키 설정됨: ${process.env.STRIPE_SECRET_KEY ? 'YES' : 'NO'}`);
+    console.log(`🔑 Stripe API 키 (처음 20자): ${process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 20) + '...' : 'NOT SET'}`);
+    
     try {
         await pool.query('SELECT NOW()');
         console.log('✅ 데이터베이스 연결 성공');
@@ -347,10 +353,6 @@ app.listen(port, async () => {
         
     } catch (err) {
         console.error('❌ 데이터베이스 연결 실패:', err);
+        console.log('⚠️ 데이터베이스 없이도 서버는 계속 실행됩니다.');
     }
-    console.log(`🚀 서버가 http://0.0.0.0:${port} 에서 실행 중입니다.`);
-    console.log(`🔗 Stripe 웹훅 엔드포인트: https://atlas-server-api.onrender.com/stripe-webhook`);
-    console.log(`🔑 웹훅 시크릿 설정됨: ${process.env.STRIPE_WEBHOOK_SECRET ? 'YES' : 'NO'}`);
-    console.log(`🔑 Stripe API 키 설정됨: ${process.env.STRIPE_SECRET_KEY ? 'YES' : 'NO'}`);
-    console.log(`🔑 Stripe API 키 (처음 20자): ${process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 20) + '...' : 'NOT SET'}`);
 });
