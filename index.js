@@ -349,4 +349,6 @@ app.listen(port, async () => {
     console.log(`🚀 서버가 http://0.0.0.0:${port} 에서 실행 중입니다.`);
     console.log(`🔗 Stripe 웹훅 엔드포인트: https://atlas-server-api.onrender.com/stripe-webhook`);
     console.log(`🔑 웹훅 시크릿 설정됨: ${process.env.STRIPE_WEBHOOK_SECRET ? 'YES' : 'NO'}`);
+    console.log(`🔑 Stripe API 키 설정됨: ${process.env.STRIPE_SECRET_KEY ? 'YES' : 'NO'}`);
+    console.log(`🔑 Stripe API 키 (처음 20자): ${process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 20) + '...' : 'NOT SET'}`);
 });
