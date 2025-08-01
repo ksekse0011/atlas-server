@@ -273,7 +273,7 @@ app.post('/create-checkout-session', async (req, res) => {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [{
-                price: process.env.STRIPE_PRICE_ID || 'price_1Rp6RTQbNZLwzuc1dH5G3S4a', // 환경변수에서 가져오기
+                price: process.env.STRIPE_PRICE_ID || 'price_1Rr8zCQbNZLwzuc1JKPwJTTX', // 새로 생성된 Price ID
                 quantity: 1,
             }],
             mode: 'subscription',
