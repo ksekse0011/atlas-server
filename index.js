@@ -15,7 +15,6 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const app = express();
 
 // 4. 미들웨어 설정
-app.use(express.json());
 app.use(express.static(__dirname)); // 현재 디렉토리의 모든 파일을 정적 파일로 서빙
 
 // 5. PostgreSQL 연결 설정
@@ -99,6 +98,9 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
     
     res.json({received: true});
 });
+
+// 10. 일반적인 JSON 요청을 처리하기 위한 body parser (웹훅 라우트 이후에 추가)
+app.use(express.json());
 
 // 8. 구독 생성 처리 함수
 async function handleSubscriptionCreated(session) {
