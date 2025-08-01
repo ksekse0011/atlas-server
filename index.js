@@ -286,7 +286,7 @@ app.post('/create-checkout-session', async (req, res) => {
             }
         });
         
-        res.json({ sessionId: session.id });
+        res.json({ sessionId: session.id, url: session.url });
     } catch (error) {
         console.error('❌ Checkout Session 생성 오류:', error);
         res.status(500).json({ error: 'Internal Server Error' });

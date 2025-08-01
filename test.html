@@ -139,8 +139,11 @@
                 
                 const data = await response.json();
                 
-                if (data.sessionId) {
-                    // Stripe Checkout으로 리다이렉트
+                if (data.url) {
+                    // Stripe에서 제공한 URL 사용 (가장 안전)
+                    window.location.href = data.url;
+                } else if (data.sessionId) {
+                    // 세션 ID로 URL 구성
                     window.location.href = `https://checkout.stripe.com/pay/${data.sessionId}`;
                 } else {
                     showResult('error', 'Checkout Session 생성 실패');
