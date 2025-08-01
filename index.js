@@ -261,6 +261,24 @@ app.get('/api/onchain-status/:walletAddress', async (req, res) => {
     }
 });
 
+// 웹훅 테스트 API
+app.get('/api/test-webhook', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT COUNT(*) as count FROM subscriptions');
+        const subscriptionCount = result.rows[0].count;
+        
+        res.json({
+            message: '웹훅 테스트',
+            subscriptionCount: subscriptionCount,
+            webhookUrl: 'https://atlas-server-api.onrender.com/stripe-webhook',
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('❌ 웹훅 테스트 오류:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 // Stripe Checkout Session 생성 API
 app.post('/create-checkout-session', async (req, res) => {
     try {
@@ -322,5 +340,5 @@ app.listen(port, async () => {
         console.error('❌ 데이터베이스 연결 실패:', err);
     }
     console.log(`🚀 서버가 http://0.0.0.0:${port} 에서 실행 중입니다.`);
-    console.log(`🔗 Stripe 웹훅 엔드포인트: http://0.0.0.0:${port}/stripe-webhook`);
+    console.log(`🔗 Stripe 웹훅 엔드포인트: https://atlas-server-api.onrender.com/stripe-webhook`);
 });
